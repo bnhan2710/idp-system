@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: pg
+    image: postgres:alpine3.16
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_USER: $DB_USERNAME
+      POSTGRES_DB: $DB_DATABASE
+    volumes:
+      - ./docker/data:/data/db
+    ports:
+      - "5432:${DB_PORT}"
+    networks:
+      - idp-sys-network
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'test@gmail.com'
+      PGADMIN_DEFAULT_PASSWORD: 'changeme'
+    volumes:
+      - ./docker/pgadmin:/root/.pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    networks:
+      - idp-sys-network
