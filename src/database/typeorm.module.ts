@@ -16,12 +16,12 @@ import { ConfigService } from '@nestjs/config';
             type: 'postgres',
             host: configService.get<string>('DB_HOST'),
             port: configService.get<number>('DB_PORT'),
-            username: configService.get<string>('DB_USER'),
-            password: configService.get<string>('DB_PASS'),
-            database: configService.get<string>('DB_NAME'),
+            username: configService.get<string>('DB_USERNAME'),
+            password: configService.get<string>('DB_PASSWORD'),
+            database: configService.get<string>('DB_DATABASE'),
             logging: configService.get<string>('BUILD_MODE') == 'development',
             entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
-            migrations: [],
+            migrations: [`${__dirname}/../migrations/**.{.ts,.js}`],
             synchronize: true
           });
           await dataSource.initialize();
