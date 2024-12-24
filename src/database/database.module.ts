@@ -1,27 +1,27 @@
 import { DataSource } from 'typeorm';
 import { Global, Module, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
+import { EnvironmentKeyFactory } from 'src/shared/services';
+                   
 @Global()
 @Module({
   imports: [],
   providers: [
     {
       provide: DataSource,
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
+      inject: [EnvironmentKeyFactory],
+      useFactory: async (envConfig: EnvironmentKeyFactory) => {
         const logger = new Logger('DatabaseConnection'); 
         try {
           const dataSource = new DataSource({
             type: 'postgres',
-            host: configService.get<string>('DB_HOST'),
-            port: configService.get<number>('DB_PORT'),
-            username: configService.get<string>('DB_USERNAME'),
-            password: configService.get<string>('DB_PASSWORD'),
-            database: configService.get<string>('DB_DATABASE'),
-            logging: configService.get<string>('BUILD_MODE') == 'development',
+            host: envConfig.getString('DB_HOST'),
+            port: envConfig.getNumber('DB_PORT'),
+            username: envConfig.getString('DB_USERNAME'),
+            password: envConfig.getString('DB_PASSWORD'),
+            database: envConfig.getString('DB_DATABASE'),
+            logging: envConfig.getString('BUILD_MODE') == 'development',
             entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
-            migrations: [`${__dirname}/../migrations/**.{.ts,.js}`],
+            migrations: [`${__dirname}/migrations/**.{.ts,.js}`],
             synchronize: true
           });
           await dataSource.initialize();
@@ -36,4 +36,4 @@ import { ConfigService } from '@nestjs/config';
   ],
   exports: [DataSource],
 })
-export class TypeOrmModule {}
+export class DatabaseModule {}
