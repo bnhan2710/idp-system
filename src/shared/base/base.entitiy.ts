@@ -22,6 +22,7 @@ export abstract class BaseEntity {
   @DeleteDateColumn({
     name: 'deleted_at',
   })
-  deletedAt: Date;
+  deletedAt?: Date;
 
 }
+

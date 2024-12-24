@@ -16,7 +16,7 @@ export class BcryptService {
   }
 
   public async compare(data: string, encrypted: string): Promise<boolean> {
-    return compare(encrypted, data);
+    return compare( data ,encrypted );
   }
   
 }

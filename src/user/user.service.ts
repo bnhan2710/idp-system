@@ -8,7 +8,7 @@ import { BcryptService } from '../shared/services';
 @Injectable()
 export class UserService {
   constructor(
-     @InjectRepository(User)
+     @InjectRepository(User) 
      private readonly userRepository: Repository<User>,
      private readonly bcryptService : BcryptService
 ) {}
@@ -18,10 +18,9 @@ export class UserService {
       throw new BadRequestException('Username already exists')
     }
     const hashedPassword = await this.bcryptService.hash(createUserDto.password);
-    console.log(hashedPassword)
     const user = await this.userRepository.create({ ...createUserDto, password: hashedPassword })
     await this.userRepository.save(user)
-    
+ 
     return user.id
   }
 
@@ -33,12 +32,16 @@ export class UserService {
     })
   }
 
-  async findOne(id: string):Promise<User> {
+  async findOneById(id: string):Promise<User> {
     const isUserExist = await this.userRepository.findOne({where:{id}})
     if(!isUserExist){
       throw new NotFoundException('User not found')
     }
     return isUserExist
+  }
+
+  async findOneByUsername(username:string):Promise<User> {
+    return this.userRepository.findOneBy({username})
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

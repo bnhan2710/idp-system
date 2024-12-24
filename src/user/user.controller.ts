@@ -23,7 +23,7 @@ export class UserController {
   @Get(':id')
   @ResponseMessage('Get user successfully')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+    return this.userService.findOneById(id);
   }
 
   @Patch(':id')

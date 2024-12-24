@@ -1,4 +1,5 @@
 export interface IUser{
     id: string;
-    permission:string[]
+    username: string;
+    role:string[]
 }
