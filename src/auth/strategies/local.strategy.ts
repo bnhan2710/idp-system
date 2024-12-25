@@ -18,5 +18,5 @@ export class LocalStategy extends PassportStrategy(Strategy) {
         return user // req.user
     }   
 
-    
-}
+
+} 

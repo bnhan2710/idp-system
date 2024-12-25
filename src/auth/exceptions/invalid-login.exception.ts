@@ -7,3 +7,4 @@ export class InvalidLoginException extends UnauthorizedException {
     super({ errorCode: 'INVALID_LOGIN', message: 'Username or password is invalid' });
   }
 }
+
