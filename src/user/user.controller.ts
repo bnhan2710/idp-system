@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseMessage } from '../core/decorator';
+import { ResponseMessage,User } from '../core/decorator';
+import { IUser } from './user.interface';
 
 @Controller('users')
 export class UserController {
@@ -24,6 +25,12 @@ export class UserController {
   @ResponseMessage('Get user successfully')
   findOne(@Param('id') id: string) {
     return this.userService.findOneById(id);
+  }
+
+  @Get('me')
+  @ResponseMessage('Get profile user')
+  getMe(@User() user: IUser) {
+    return user
   }
 
   @Patch(':id')

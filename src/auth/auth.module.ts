@@ -9,13 +9,6 @@ import { UserModule } from '../user/user.module';
 @Module({
 
   imports: [
-    // JwtModule.registerAsync({
-    //   inject: [EnvironmentKeyFactory],
-    //   useFactory: async (envConfig: EnvironmentKeyFactory) => ({
-    //       secret: ( await envConfig.getJwtSecret()) as string,
-    //       signOptions: { expiresIn: '1d' }
-    //   }),
-    // }),
     JwtModule.register({}),
     UserModule
   ],
