@@ -6,7 +6,7 @@ import {
 import { BaseEntity } from '../../shared/base/base.entitiy'; 
 import { Role } from '../../role/entities/role.entity';
 
-@Entity({name: 'permission'})
+@Entity({name: 'permissions'})
 export class Permission extends BaseEntity{
     @Column({
         name: 'name',

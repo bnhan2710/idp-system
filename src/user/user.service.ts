@@ -32,12 +32,13 @@ export class UserService {
     })
   }
 
-  async findOneById(id: string):Promise<User> {
+  async findOneById(id: string):Promise<Partial<User>> {
     const isUserExist = await this.userRepository.findOne({where:{id}})
     if(!isUserExist){
       throw new NotFoundException('User not found')
     }
-    return isUserExist
+    const {password, ...result } = isUserExist
+    return result
   }
 
   async findOneByUsername(username:string):Promise<User> {

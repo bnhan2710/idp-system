@@ -21,17 +21,20 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('me')
+  @ResponseMessage('Get profile success')
+  getProfile(
+    @User() user:IUser
+  ){
+    return this.userService.findOneById(user.id)
+  }
+
   @Get(':id')
   @ResponseMessage('Get user successfully')
   findOne(@Param('id') id: string) {
     return this.userService.findOneById(id);
   }
 
-  @Get('me')
-  @ResponseMessage('Get profile user')
-  getMe(@User() user: IUser) {
-    return user
-  }
 
   @Patch(':id')
   @ResponseMessage('Update user successfully')

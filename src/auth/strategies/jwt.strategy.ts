@@ -19,8 +19,8 @@ export class JwtStrategy extends PassportStrategy(Strategy,'jwt'){
 }
 
     //decode user 
-    async(payload: IUser){ 
+    async validate(payload: IUser){ 
         return payload
     }
 
-} 
+}  
