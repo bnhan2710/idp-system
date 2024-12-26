@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseMessage,User } from '../core/decorator';
 import { IUser } from './user.interface';
+import { PagingDto } from '@shared/base/paging.dto';
 
 @Controller('users')
 export class UserController {
@@ -17,8 +18,12 @@ export class UserController {
 
   @Get()
   @ResponseMessage('Get all user')
-  findAll() {
-    return this.userService.findAll();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  findAll(
+    @Query() qs:PagingDto
+  ) {
+    console.log(qs)
+    return this.userService.findAll(qs);
   }
 
   @Get('me')

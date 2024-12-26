@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BcryptService } from '../shared/services';
+import { PagingDto } from '@shared/base/paging.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -24,12 +25,22 @@ export class UserService {
     return user.id
   }
 
-  findAll(): Promise<User[] | null> {
-    return  this.userRepository.find({
-      relations: ['roles'],
-      skip: 0, 
-      take: 20
-    })
+  async findAll(pagingDto: PagingDto): Promise<User[]> {
+    const limit = pagingDto.limit ?? 10;
+    const offset = (pagingDto.page - 1) * limit;
+    const cond = {
+      where: [
+        { email: Like(`%${pagingDto.search ?? ''}%`) },
+        { username: Like(`%${pagingDto.search ?? ''}%`) },
+      ],
+      order: {
+        username: pagingDto.sort as 'ASC' | 'DESC' ?? 'ASC',
+      },
+      take: limit,
+      skip: offset,
+    };
+
+    return this.userRepository.find(cond);
   }
 
   async findOneById(id: string):Promise<Partial<User>> {
