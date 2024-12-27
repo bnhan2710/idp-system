@@ -4,6 +4,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { ResponseMessage } from 'src/core/decorator';
 import { PagingDto } from '@shared/base/paging.dto';
+import { AssignPermissionDto } from './dto/asign-permission.dto';
 
 @Controller('permissions')
 export class PermissionController {
@@ -39,4 +40,12 @@ export class PermissionController {
   remove(@Param('id') id: string) {
     return this.permissionService.remove(id);
   }
+
+  @Post('assign')
+  @ResponseMessage('Assign permission to role succesfully')
+  assignPermission(
+    @Body() assignPermissionDto: AssignPermissionDto){
+    return this.permissionService.assignPermission(assignPermissionDto)
+  }
+
 }

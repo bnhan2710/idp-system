@@ -5,11 +5,14 @@ import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from './entities/permission.entity';
 import { PagingDto } from '@shared/base/paging.dto';
+import { RoleService } from '../role/role.service';
+import { AssignPermissionDto } from './dto/asign-permission.dto';
 @Injectable()
 export class PermissionService {
   constructor(
     @InjectRepository(Permission)
-    private readonly permissionRepository: Repository<Permission>
+    private readonly permissionRepository: Repository<Permission>,
+    private readonly roleRoleService : RoleService
   ) {}
 
   async create(createPermissionDto: CreatePermissionDto):Promise<string> {
@@ -64,4 +67,20 @@ export class PermissionService {
     }
     await this.permissionRepository.softDelete({id})
   }
+
+  async assignPermission(assignPermissionDto: AssignPermissionDto) {
+    const role = await this.roleRoleService.findOne(assignPermissionDto.roleId);
+    const permissionArr = role.permissions ?? [];
+  
+    for (const permissionId of assignPermissionDto.permissions) {
+      const permission = await this.permissionRepository.findOne({ where: { id: permissionId } });
+      if (!permission) {
+        throw new NotFoundException('Permission not found');
+      }
+      permissionArr.push(permission);
+    }
+    const permissionIds = permissionArr.map(permission => permission.id);
+    this.roleRoleService.updatePermissions(role.id, permissionIds);
+  }
+  
 }

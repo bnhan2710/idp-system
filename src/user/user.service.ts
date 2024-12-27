@@ -72,4 +72,14 @@ export class UserService {
     }
     await this.userRepository.softDelete({id})
   }
+
+  async updateRoles(id: string, roles: string[]):Promise<void> {
+    const user = await this.userRepository.findOne({where:{id}})
+    if(!user){
+      throw new NotFoundException('User not found')
+    }
+    const rolesToUpdate = roles.map(role => ({ id: role }));
+    this.userRepository.merge(user, { roles: rolesToUpdate });
+    await this.userRepository.save(user);
+  }
 }
