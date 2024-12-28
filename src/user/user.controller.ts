@@ -22,7 +22,6 @@ export class UserController {
   findAll(
     @Query() qs:PagingDto
   ) {
-    console.log(qs)
     return this.userService.findAll(qs);
   }
 

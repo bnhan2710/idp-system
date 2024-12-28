@@ -26,8 +26,9 @@ export class UserService {
   }
 
   async findAll(pagingDto: PagingDto): Promise<User[]> {
+    const page = pagingDto.page ?? 1;
     const limit = pagingDto.limit ?? 10;
-    const offset = (pagingDto.page - 1) * limit;
+    const offset = (page - 1) * limit;
     const cond = {
       where: [
         { email: Like(`%${pagingDto.search ?? ''}%`) },
@@ -56,7 +57,7 @@ export class UserService {
     return this.userRepository.findOneBy({username})
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto):Promise<void> {
     const user = await this.userRepository.findOne({where:{id}})
     if(!user){
       throw new NotFoundException('User not found')
@@ -64,11 +65,21 @@ export class UserService {
     await this.userRepository.update({ id: id }, { ...updateUserDto })
   }
 
-  async remove(id: string) {
+  async remove(id: string):Promise<void> {
     const user = await this.userRepository.findOne({where:{id}})
     if(!user){
       throw new NotFoundException('User not found')
     }
     await this.userRepository.softDelete({id})
+  }
+
+  async updateRoles(id: string, roles: string[]):Promise<void> {
+    const user = await this.userRepository.findOne({where:{id}})
+    if(!user){
+      throw new NotFoundException('User not found')
+    }
+    const rolesToUpdate = roles.map(role => ({ id: role }));
+    this.userRepository.merge(user, { roles: rolesToUpdate });
+    await this.userRepository.save(user);
   }
 }
