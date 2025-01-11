@@ -2,11 +2,18 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { PagingDto } from '@shared/base/paging.dto';
 import { AssginRoleDto } from './dto/assign-role.dto';
 import { UserService } from '../user/user.service';
+import { 
+  ErrRoleNotFound,
+  ErrRoleAlreadyExists,
+  ErrRoleNotEditable,
+  ErrSomeRoleNotFound
+} from './exceptions';
+import { Permission } from '../permission/entities/permission.entity';
 @Injectable()
 export class RoleService {
   constructor(
@@ -18,7 +25,7 @@ export class RoleService {
   async create(createRoleDto: CreateRoleDto):Promise<string> {
       const isExist = await this.roleRepository.findOne({where:{name:createRoleDto.name}})
       if(isExist){
-        throw new BadRequestException('Role already exists')
+        throw ErrRoleAlreadyExists
       }
       const role = await this.roleRepository.create({...createRoleDto}) 
       await this.roleRepository.save(role)
@@ -26,7 +33,7 @@ export class RoleService {
 
   }
 
-  async findAll(pagingDo:PagingDto): Promise<Role[]> {
+  async findAll(pagingDo:PagingDto): Promise<any> {
     const page = pagingDo.page ?? 1;
     const limit = pagingDo.limit ?? 10;
     const offset = (page - 1) * limit;
@@ -37,24 +44,31 @@ export class RoleService {
       take: limit,
       skip: offset,
     };
-    return this.roleRepository.find(cond)
+   const role = await this.roleRepository.findAndCount(cond)
+   return {
+      pagination: role[0],
+      total: role[1],
+      page,
+      limit
+   }
   }
 
   async findOne(id: string):Promise<Role> {
     const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw new BadRequestException('Role not found')
+      throw ErrRoleNotFound
     }
     return role
+  
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto):Promise<void> {
    const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw new BadRequestException('Role not found')
+      throw ErrRoleNotFound
     }
     if(!role.isEditable){
-      throw new BadRequestException(`Role ${role.name} cannot be edit`)
+      throw ErrRoleNotEditable
     }
     await this.roleRepository.update({id},{...updateRoleDto})
   }
@@ -62,38 +76,41 @@ export class RoleService {
   async remove(id: string):Promise<void> {
     const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw new BadRequestException('Role not found')
+      throw ErrRoleNotFound
     }
     if(!role.isEditable){
-      throw new BadRequestException(`Role ${role.name} cannot be delete`)
+      throw ErrRoleNotEditable
     }
     await this.roleRepository.softDelete({id})
   }
 
-  async updatePermissions(roleId: string, permissions: string[]){
+  async updatePermissions(roleId: string, permissions: Permission[]){
       const role = await this.roleRepository.findOne({where:{id:roleId}})
       if(!role){
-        throw new NotFoundException('Role not found')
+        throw ErrRoleNotFound
       }
-      const permissionsToUpdate = permissions.map(permission => ({ id: permission }));
-      this.roleRepository.merge(role, { permissions: permissionsToUpdate });
+      role.permissions = permissions
       return this.roleRepository.save(role);
   }
 
   async assignRole(assignRoleDto:AssginRoleDto){
-    const user = await this.userService.findOneById(assignRoleDto.userId)
-    if(!user){
-      throw new NotFoundException('User not found')
+    const roles  = await this.roleRepository.findByIds(assignRoleDto.roleIds)
+    if(roles.length !== assignRoleDto.roleIds.length){
+      throw ErrSomeRoleNotFound
     }
-    const roleArr = user.roles ?? []
-    for (const roleId of assignRoleDto.roles) {
-      const role = await this.roleRepository.findOne({ where: { id: roleId } });
-      if (!role) {
-        throw new NotFoundException('Role not found');
-      }
-      roleArr.push(role);
-    }
-    const roleIds = roleArr.map(role => role.id);
-    await this.userService.updateRoles(user.id, roleIds);
+    await this.userService.updateRoles(assignRoleDto.userId, roles);
   }
+
+  async findRoleRelatedPermission(roleNames: string[]) {
+  
+    const rolesPermissions = await this.roleRepository.find({
+      where: { name: In(roleNames) },
+      relations: ['permissions']
+    });
+    if (!rolesPermissions || rolesPermissions.length === 0) {
+      throw ErrRoleNotFound;
+    }
+    return rolesPermissions;
+  }
+  
 }

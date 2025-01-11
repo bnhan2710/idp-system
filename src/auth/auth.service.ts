@@ -54,9 +54,7 @@ export class AuthService {
         expires: new Date(Date.now() + this.envConfig.getRefeshTokenExpiration()),
         httpOnly: true 
       })
-    return {
-      accessToken
-    }
+    return accessToken
   }
 
   async renewToken(refreshToken:string) {

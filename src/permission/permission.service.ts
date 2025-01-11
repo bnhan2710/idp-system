@@ -7,6 +7,11 @@ import { Permission } from './entities/permission.entity';
 import { PagingDto } from '@shared/base/paging.dto';
 import { RoleService } from '../role/role.service';
 import { AssignPermissionDto } from './dto/asign-permission.dto';
+import {
+  ErrNotFoundPermission,
+  ErrPermissionAlreadyExists,
+  ErrSomePermissionNotFound
+} from './exceptions';
 @Injectable()
 export class PermissionService {
   constructor(
@@ -18,7 +23,7 @@ export class PermissionService {
   async create(createPermissionDto: CreatePermissionDto):Promise<string> {
     const isExist = await this.permissionRepository.findOne({where:{name:createPermissionDto.name}})
     if(isExist){
-      throw new BadRequestException('Permission already exist')
+      throw ErrPermissionAlreadyExists
     }
     const permission = await this.permissionRepository.create({...createPermissionDto})
     await this.permissionRepository.save(permission)
@@ -47,7 +52,7 @@ export class PermissionService {
   async findOne(id: string):Promise<Permission> {
       const permission = await this.permissionRepository.findOne({where:{id}})
       if(!permission){
-        throw new NotFoundException('Permission not found')
+        throw ErrNotFoundPermission
       }
       return permission 
   }
@@ -55,7 +60,7 @@ export class PermissionService {
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {
     const permission = await this.permissionRepository.findOne({where:{id}})
     if(!permission){
-      throw new NotFoundException('Permission not found')
+      throw ErrNotFoundPermission
     }
     await this.permissionRepository.update({id},{...updatePermissionDto})
   }
@@ -63,24 +68,17 @@ export class PermissionService {
   async remove(id: string) {
     const permission = await this.permissionRepository.findOne({where:{id}})
     if(!permission){
-      throw new NotFoundException('Permission not found')
+      throw ErrNotFoundPermission
     }
     await this.permissionRepository.softDelete({id})
   }
 
   async assignPermission(assignPermissionDto: AssignPermissionDto) {
-    const role = await this.roleRoleService.findOne(assignPermissionDto.roleId);
-    const permissionArr = role.permissions ?? [];
-  
-    for (const permissionId of assignPermissionDto.permissions) {
-      const permission = await this.permissionRepository.findOne({ where: { id: permissionId } });
-      if (!permission) {
-        throw new NotFoundException('Permission not found');
-      }
-      permissionArr.push(permission);
+    const permissions = await this.permissionRepository.findByIds(assignPermissionDto.permissionIds)
+    if(permissions.length !== assignPermissionDto.permissionIds.length){
+      throw ErrSomePermissionNotFound
     }
-    const permissionIds = permissionArr.map(permission => permission.id);
-    this.roleRoleService.updatePermissions(role.id, permissionIds);
+    this.roleRoleService.updatePermissions(assignPermissionDto.roleId, permissions);
   }
-  
+
 }

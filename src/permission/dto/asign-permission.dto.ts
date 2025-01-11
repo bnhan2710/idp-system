@@ -7,5 +7,5 @@ export class AssignPermissionDto{
 
     @IsArray({message: 'Permissions must be an array of UUIDs '})
     @IsUUID("4", { each: true })
-    permissions: string[]
+    permissionIds: string[]
 }

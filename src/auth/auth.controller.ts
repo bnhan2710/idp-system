@@ -21,7 +21,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('refresh')
+  @Get('refresh')
   @ResponseMessage('Process a new token')
   renewToken(
     @Req() req: Request,
