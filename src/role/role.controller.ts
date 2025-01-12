@@ -5,17 +5,19 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { ResponseMessage } from 'src/core/decorator';
 import { PagingDto } from '@shared/base/paging.dto';
 import { AssginRoleDto } from './dto/assign-role.dto';
-
+import { Identified } from '../core/decorator/indentified.decorator';
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @Identified
   @Post()
   @ResponseMessage('Create role successfully')
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
 
+  
   @Get()
   @ResponseMessage('Get all role with pagination')
   findAll(

@@ -4,8 +4,8 @@ import { AuthController } from './auth.controller';
 import { LocalStategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { EnvironmentKeyFactory } from '@shared/services';
 import { UserModule } from '../user/user.module';
+import { PermissionGuard } from './guards/permission.guard';
 @Module({
 
   imports: [
@@ -18,5 +18,7 @@ import { UserModule } from '../user/user.module';
     JwtStrategy
   ],
   controllers: [AuthController],
+  exports: [
+  ]
 })
 export class AuthModule {}

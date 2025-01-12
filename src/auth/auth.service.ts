@@ -45,7 +45,7 @@ export class AuthService {
 
 
   async login(user: IUser,res: Response) {
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, id: user.id };
     const accessToken = await this.generateAccessToken(payload)
     const refreshToken = await this.generateRefreshToken(payload)
     res.cookie('refreshToken', 

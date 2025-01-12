@@ -8,6 +8,7 @@ import { BcryptService } from '../shared/services';
 import { PagingDto } from '@shared/base/paging.dto';
 import { Role } from '../role/entities/role.entity';
 import { ErrUserNotFound, ErrUserAlreadyExists } from './exceptions';
+import { map } from 'rxjs/operators';
 @Injectable()
 export class UserService {
   constructor(
@@ -97,4 +98,17 @@ export class UserService {
     user.roles = roles
     await this.userRepository.save(user)
   }
+
+  async getPermissionbyId(id:string){
+    const user = await this.userRepository.findOne({
+      relations: ['roles','roles.permissions'],
+      where: { id }
+    })
+    if(!user){
+      throw ErrUserNotFound
+    }
+    const permissions = user.roles?.map((role) => role.permissions.map((per) => per.name)).flat()
+    return permissions
+  }
+
 }

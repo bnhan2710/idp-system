@@ -102,7 +102,6 @@ export class RoleService {
   }
 
   async findRoleRelatedPermission(roleNames: string[]) {
-  
     const rolesPermissions = await this.roleRepository.find({
       where: { name: In(roleNames) },
       relations: ['permissions']
@@ -112,5 +111,4 @@ export class RoleService {
     }
     return rolesPermissions;
   }
-  
 }

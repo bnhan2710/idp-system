@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseMessage,User } from '../core/decorator';
 import { IUser } from './user.interface';
 import { PagingDto } from '@shared/base/paging.dto';
-
+import { CanAccessBy } from '../core/decorator/access-by.decorator';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -16,6 +16,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @CanAccessBy('GET_ALL_USER')
   @Get()
   @ResponseMessage('Get all user')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -32,6 +33,7 @@ export class UserController {
   ){
     return this.userService.findOneById(user.id)
   }
+
 
   @Get(':id')
   @ResponseMessage('Get user successfully')
