@@ -8,5 +8,5 @@ export class AssginRoleDto {
     
     @IsArray({message: 'Role ID must be an array of UUIDs '})
     @IsUUID("4",{each:true})
-    roles:string[]
+    roleIds:string[]
 }

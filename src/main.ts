@@ -9,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const reflector = app.get(Reflector);
 
-  app.useGlobalGuards(new JwtAuthGuard(reflector))
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true
   }));
@@ -24,7 +23,7 @@ async function bootstrap() {
       "credentials": true
     }
   )
-  //config version
+  //config api version
   app.setGlobalPrefix('api')
   app.enableVersioning({
     type: VersioningType.URI,
