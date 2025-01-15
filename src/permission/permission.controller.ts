@@ -41,8 +41,8 @@ export class PermissionController {
     return this.permissionService.remove(id);
   }
 
-  @Post('assign')
-  @ResponseMessage('Assign permission to role succesfully')
+  @Patch('permissions')
+  @ResponseMessage('Update access control list of role')
   assignPermission(
     @Body() assignPermissionDto: AssignPermissionDto){
     return this.permissionService.assignPermission(assignPermissionDto)

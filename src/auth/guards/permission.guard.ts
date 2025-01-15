@@ -14,7 +14,7 @@ export class PermissionGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean>{
         const userId = context.switchToHttp().getRequest().user.id;
         //cache ...
-        console.log(this.userService)
+        
         const userPermissions = await this.userService.getPermissionbyId(userId)        
         const requiredPermission = this.reflector.get<string[]>(ACCESS_RIGHT_KEY, context.getHandler())
         return requiredPermission.some((permission) => userPermissions.includes(permission))

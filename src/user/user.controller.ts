@@ -6,17 +6,21 @@ import { ResponseMessage,User } from '../core/decorator';
 import { IUser } from './user.interface';
 import { PagingDto } from '@shared/base/paging.dto';
 import { CanAccessBy } from '../core/decorator/access-by.decorator';
+import { Identified } from '../core/decorator/indentified.decorator';
+import { AccessPermission } from '@shared/common/permission';
+
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @CanAccessBy(AccessPermission.CREATE_USER)
   @Post()
   @ResponseMessage('Create user successfully')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @CanAccessBy('GET_ALL_USER')
+  @CanAccessBy(AccessPermission.VIEW_USERS)
   @Get()
   @ResponseMessage('Get all user')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -26,6 +30,7 @@ export class UserController {
     return this.userService.findAll(qs);
   }
 
+  @Identified
   @Get('me')
   @ResponseMessage('Get profile success')
   getProfile(
@@ -34,14 +39,13 @@ export class UserController {
     return this.userService.findOneById(user.id)
   }
 
-
   @Get(':id')
   @ResponseMessage('Get user successfully')
   findOne(@Param('id') id: string) {
     return this.userService.findOneById(id);
   }
 
-
+  @Identified
   @Patch(':id')
   @ResponseMessage('Update user successfully')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
