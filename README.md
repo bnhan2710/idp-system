@@ -35,7 +35,7 @@ $ yarn start:prod
 
   - [x] Database. Support [TypeORM](https://www.npmjs.com/package/typeorm)
   - [x] Migrations ([Typeorm Extension](https://www.npmjs.com/package/typeorm-extension)).
-  - [ ] Seeding Role and Permission ([Typeorm Extension](https://www.npmjs.com/package/typeorm-extension)).
+  - [ ] Seeding Data ([Typeorm Extension](https://www.npmjs.com/package/typeorm-extension)).
   - [x] EnvironmentKeyFactory (Custom env loader).
   - [x] User module.
   - [x] Role module.
@@ -43,7 +43,7 @@ $ yarn start:prod
   - [x] Auth module.
   - [x] Role based access control.
   - [ ] Swagger.
-  - [ ] Redis cache.
-  - [ ] OAuth2 login (Google, Facebook, Github, etc).
+  - [ ] Caching.
+  - [ ] OAuth2 login (Google, Facebook, etc).
   - [ ] E2E and units tests.
   - [x] Docker.
