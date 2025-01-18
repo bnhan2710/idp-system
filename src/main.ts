@@ -1,7 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { TransformInterceptor } from './core/interceptors/transform.interceptor';
+import { TransformInterceptor } from '@common/interceptors/transform.interceptor';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {

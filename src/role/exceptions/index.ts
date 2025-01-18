@@ -1,6 +1,30 @@
 import { NotFoundException, BadRequestException, ForbiddenException } from "@nestjs/common";
 
-export const ErrRoleNotFound = new NotFoundException('Role not found')
-export const ErrSomeRoleNotFound = new NotFoundException('Some role not found')
-export const ErrRoleAlreadyExists = new BadRequestException('Role already exists')
-export const ErrRoleNotEditable = new ForbiddenException('Role cannot be edit')
+export class RoleNotFoundException extends NotFoundException{
+    errorCode: string
+
+    constructor(){
+        super({errorCode: 'NOT_FOUND', message: 'Role not found'})
+    }
+}
+
+export class RoleAlreadyExistsException extends BadRequestException{
+    errorCode: string
+    constructor(){
+        super({errorCode: 'ALREADY_EXISTS', message: 'Role already exists'})
+    }
+}
+
+export class RoleNotEditableException extends ForbiddenException{
+    errorCode: string
+    constructor(){
+        super({errorCode: 'NOT_EDITABLE', message: 'Role cannot be edit'})
+    }
+}
+
+export class SomeRoleNotFoundException extends NotFoundException{
+    errorCode: string
+    constructor(){
+        super({errorCode: 'NOT_FOUND', message: 'Some role not found'})
+    }
+}

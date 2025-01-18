@@ -2,12 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ValidationPip
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseMessage,User } from '../core/decorator';
+import { ResponseMessage,User } from '../common/decorator';
 import { IUser } from './user.interface';
 import { PagingDto } from '@shared/base/paging.dto';
-import { CanAccessBy } from '../core/decorator/access-by.decorator';
-import { Identified } from '../core/decorator/indentified.decorator';
-import { AccessPermission } from '@shared/common/permission';
+import { CanAccessBy, Identified } from '@common/decorator/index';
+import { AccessPermission } from '@common/constants/permission';
+import { UuidValidationPipe } from '@common/pipes/uuid-validation.pipe';
 
 @Controller('users')
 export class UserController {
@@ -41,20 +41,20 @@ export class UserController {
 
   @Get(':id')
   @ResponseMessage('Get user successfully')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', UuidValidationPipe) id: string) {
     return this.userService.findOneById(id);
   }
 
   @Identified
   @Patch(':id')
   @ResponseMessage('Update user successfully')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id', UuidValidationPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
   
   @Delete(':id')
   @ResponseMessage('Delete user successfully')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', UuidValidationPipe) id: string) {
     return this.userService.remove(id);
   }
 }

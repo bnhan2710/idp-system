@@ -11,4 +11,5 @@ import { EnvironmentKeyFactory } from '../shared/services/environment-key.factor
     }),
   ],
 })
+
 export class DatabaseModule {}

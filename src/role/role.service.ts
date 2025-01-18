@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,10 +8,10 @@ import { PagingDto } from '@shared/base/paging.dto';
 import { AssginRoleDto } from './dto/assign-role.dto';
 import { UserService } from '../user/user.service';
 import { 
-  ErrRoleNotFound,
-  ErrRoleAlreadyExists,
-  ErrRoleNotEditable,
-  ErrSomeRoleNotFound
+  RoleAlreadyExistsException,
+  RoleNotFoundException,
+  RoleNotEditableException,
+  SomeRoleNotFoundException
 } from './exceptions';
 import { Permission } from '../permission/entities/permission.entity';
 @Injectable()
@@ -25,7 +25,7 @@ export class RoleService {
   async create(createRoleDto: CreateRoleDto):Promise<string> {
       const isExist = await this.roleRepository.findOne({where:{name:createRoleDto.name}})
       if(isExist){
-        throw ErrRoleAlreadyExists
+        throw new RoleAlreadyExistsException()
       }
       const role = await this.roleRepository.create({...createRoleDto}) 
       await this.roleRepository.save(role)
@@ -56,7 +56,7 @@ export class RoleService {
   async findOne(id: string):Promise<Role> {
     const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw ErrRoleNotFound
+      throw new RoleNotFoundException()
     }
     return role
   
@@ -65,10 +65,10 @@ export class RoleService {
   async update(id: string, updateRoleDto: UpdateRoleDto):Promise<void> {
    const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw ErrRoleNotFound
+      throw new RoleNotFoundException()
     }
     if(!role.isEditable){
-      throw ErrRoleNotEditable
+      throw new RoleNotEditableException()
     }
     await this.roleRepository.update({id},{...updateRoleDto})
   }
@@ -76,10 +76,10 @@ export class RoleService {
   async remove(id: string):Promise<void> {
     const role = await this.roleRepository.findOne({where:{id}})
     if(!role){
-      throw ErrRoleNotFound
+      throw new RoleNotFoundException()
     }
     if(!role.isEditable){
-      throw ErrRoleNotEditable
+      throw new RoleNotEditableException()
     }
     await this.roleRepository.softDelete({id})
   }
@@ -87,7 +87,7 @@ export class RoleService {
   async updatePermissions(roleId: string, permissions: Permission[]){
       const role = await this.roleRepository.findOne({where:{id:roleId}})
       if(!role){
-        throw ErrRoleNotFound
+        throw new RoleNotFoundException()
       }
       role.permissions = permissions
       return this.roleRepository.save(role);
@@ -96,7 +96,7 @@ export class RoleService {
   async assignRole(assignRoleDto:AssginRoleDto){
     const roles  = await this.roleRepository.findByIds(assignRoleDto.roleIds)
     if(roles.length !== assignRoleDto.roleIds.length){
-      throw ErrSomeRoleNotFound
+      throw new SomeRoleNotFoundException()
     }
     await this.userService.updateRoles(assignRoleDto.userId, roles);
   }
@@ -107,7 +107,7 @@ export class RoleService {
       relations: ['permissions']
     });
     if (!rolesPermissions || rolesPermissions.length === 0) {
-      throw ErrRoleNotFound;
+      throw new NotFoundException('Role not found');
     }
     return rolesPermissions;
   }
