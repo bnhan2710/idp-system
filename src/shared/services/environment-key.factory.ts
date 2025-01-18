@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { isBooleanString } from 'class-validator';
+import { join } from 'path';
 
 
 @Injectable()
@@ -70,11 +71,13 @@ export class EnvironmentKeyFactory{
       port: this.getNumber('DB_PORT'),
       database: this.getString('DB_DATABASE'),
       synchronize: this.getBoolean('DB_SYNC'),
-      entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
-      // migrations: [`${__dirname}../migrations/**/*.{ts,js}`],
-      logging: this.configService.get('BUILD_MODE') === 'development',
+      entities: [join(__dirname, '../../**/*.entity{.ts,.js}')],
+      migrations: [join(__dirname, '../../database/migrations/*{.ts,.js}')],
+      // logging: this.configService.get('BUILD_MODE') === 'development',
+      logging: false
       // migrationsRun: true,
     };
   }
 
 }
+ 

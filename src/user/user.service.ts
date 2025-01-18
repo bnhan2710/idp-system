@@ -99,7 +99,7 @@ export class UserService {
     await this.userRepository.save(user)
   }
 
-  async getPermissionbyId(id:string){
+  async getUserPermissionbyId(id:string){
     const user = await this.userRepository.findOne({
       relations: ['roles','roles.permissions'],
       where: { id }
