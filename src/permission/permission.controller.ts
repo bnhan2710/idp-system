@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { ResponseMessage } from 'src/core/decorator';
+import { ResponseMessage } from '@common/decorator';
 import { PagingDto } from '@shared/base/paging.dto';
 import { AssignPermissionDto } from './dto/asign-permission.dto';
+import { UuidValidationPipe } from '@common/pipes/uuid-validation.pipe';
 
 @Controller('permissions')
 export class PermissionController {
@@ -25,19 +26,19 @@ export class PermissionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', UuidValidationPipe) id: string) {
     return this.permissionService.findOne(id);
   }
 
   @Patch(':id')
   @ResponseMessage('Update permission successfully')
-  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+  update(@Param('id', UuidValidationPipe) id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
     return this.permissionService.update(id, updatePermissionDto);
   }
 
   @Delete(':id')
   @ResponseMessage('Delete permission successfully')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', UuidValidationPipe) id: string) {
     return this.permissionService.remove(id);
   }
 

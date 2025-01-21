@@ -7,8 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BcryptService } from '../shared/services';
 import { PagingDto } from '@shared/base/paging.dto';
 import { Role } from '../role/entities/role.entity';
-import { ErrUserNotFound, ErrUserAlreadyExists } from './exceptions';
-import { map } from 'rxjs/operators';
+import { UserAlreadyExistsException, UserNotFoundException } from './exceptions';
 @Injectable()
 export class UserService {
   constructor(
@@ -19,7 +18,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto):Promise<string> {
     const isExist = await this.userRepository.findOne({where:{username:createUserDto.username}})
     if(isExist){
-      throw ErrUserAlreadyExists
+      throw new UserAlreadyExistsException()
     }
     const hashedPassword = await this.bcryptService.hash(createUserDto.password);
     const user = await this.userRepository.create({ ...createUserDto, password: hashedPassword })
@@ -53,6 +52,7 @@ export class UserService {
     };
 
     const users = await this.userRepository.findAndCount(cond)
+  
     return {
       pagination: users[0],
       total: users[1],
@@ -64,7 +64,7 @@ export class UserService {
   async findOneById(id: string):Promise<Partial<User>> {
     const isUserExist = await this.userRepository.findOne({where:{id}})
     if(!isUserExist){
-      throw ErrUserNotFound
+      throw new UserNotFoundException()
     }
     const {password, ...result } = isUserExist
     return result
@@ -77,7 +77,7 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto):Promise<void> {
     const user = await this.userRepository.findOne({where:{id}})
     if(!user){
-      throw ErrUserNotFound
+      throw new UserNotFoundException()
     }
     await this.userRepository.update({ id: id }, { ...updateUserDto })
   }
@@ -85,7 +85,7 @@ export class UserService {
   async remove(id: string):Promise<void> {
     const user = await this.userRepository.findOne({where:{id}})
     if(!user){
-      throw ErrUserNotFound
+      throw new UserNotFoundException()
     }
     await this.userRepository.softDelete({id})
   }
@@ -93,7 +93,7 @@ export class UserService {
   async updateRoles(id: string, roles: Role[]):Promise<void> {
     const user = await this.userRepository.findOne({where:{id}})
     if(!user){
-      throw  ErrUserNotFound
+      throw new UserNotFoundException()
     }
     user.roles = roles
     await this.userRepository.save(user)
@@ -105,7 +105,7 @@ export class UserService {
       where: { id }
     })
     if(!user){
-      throw ErrUserNotFound
+      throw new UserNotFoundException()
     }
     const permissions = user.roles?.map((role) => role.permissions.map((per) => per.name)).flat()
     return permissions

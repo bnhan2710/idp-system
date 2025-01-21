@@ -3,8 +3,8 @@ import { AuthService } from './auth.service';
 import { Response,Request } from 'express';
 import { IUser } from '../user/user.interface';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ResponseMessage } from '../core/decorator';
-import { Public,User } from '../core/decorator';
+import { ResponseMessage } from '../common/decorator';
+import { Public,User } from '@common/decorator/index';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

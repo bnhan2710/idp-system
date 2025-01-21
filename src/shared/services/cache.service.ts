@@ -20,15 +20,15 @@ export class CacheService {
     }
 
     private async set(key: string, value: any, ttl: number): Promise<void> {
-      await this.cacheManager.set(key, value, ttl);
+      await this.set(key, value, ttl);
     }
 
     async getUserPermissions(userId): Promise<string[]>{
-        return await this.cacheManager.get(this.getUserPermissionKey(userId))
+        return await this.get(this.getUserPermissionKey(userId))
     }
 
     async setUserPermission(userId:string, permissions:string[]) {
-        await this.cacheManager.set(this.getUserPermissionKey(userId), permissions, 1000*60*60*24)
+        await this.set(this.getUserPermissionKey(userId), permissions, 1000*60*60*24)
     }
 
 }

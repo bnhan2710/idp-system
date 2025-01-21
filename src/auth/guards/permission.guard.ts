@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { ACCESS_RIGHT_KEY } from '../../core/decorator/access-by.decorator';
+import { ACCESS_RIGHT_KEY } from '../../common/decorator/access-by.decorator';
 import { UserService } from "../../user/user.service";
 import { Injectable } from "@nestjs/common";
 import { CacheService } from "@shared/services/cache.service";

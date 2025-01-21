@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { ResponseMessage } from 'src/core/decorator';
+import { ResponseMessage } from '@common/decorator'
 import { PagingDto } from '@shared/base/paging.dto';
 import { AssginRoleDto } from './dto/assign-role.dto';
-import { Identified } from '../core/decorator/indentified.decorator';
+import { Identified } from '@common/decorator/indentified.decorator';
+import { UuidValidationPipe } from '@common/pipes/uuid-validation.pipe';
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
@@ -28,19 +29,19 @@ export class RoleController {
 
   @Get(':id')
   @ResponseMessage('Get role successfully')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', UuidValidationPipe) id: string) {
     return this.roleService.findOne(id);
   }
 
   @Patch(':id')
   @ResponseMessage('Update role successfully')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+  update(@Param('id', UuidValidationPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(id, updateRoleDto);
   }
 
   @Delete(':id')
   @ResponseMessage('Delete role successfully')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', UuidValidationPipe) id: string) {
     return this.roleService.remove(id);
   }
 
