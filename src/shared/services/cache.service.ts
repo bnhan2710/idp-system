@@ -15,12 +15,14 @@ export class CacheService {
     return await this.cacheManager.get(key);
     }
 
+
+
     private async del(key: string): Promise<void> {
         await this.cacheManager.del(key);
     }
 
     private async set(key: string, value: any, ttl: number): Promise<void> {
-      await this.set(key, value, ttl);
+      await this.cacheManager.set(key, value, ttl);
     }
 
     async getUserPermissions(userId): Promise<string[]>{

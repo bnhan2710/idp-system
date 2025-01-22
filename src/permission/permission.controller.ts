@@ -32,7 +32,9 @@ export class PermissionController {
 
   @Patch(':id')
   @ResponseMessage('Update permission successfully')
-  update(@Param('id', UuidValidationPipe) id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+  update( 
+    @Param('id', UuidValidationPipe) id: string,
+    @Body() updatePermissionDto: UpdatePermissionDto) {
     return this.permissionService.update(id, updatePermissionDto);
   }
 

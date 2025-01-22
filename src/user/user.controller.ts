@@ -22,7 +22,7 @@ export class UserController {
 
   @CanAccessBy(AccessPermission.VIEW_USERS)
   @Get()
-  @ResponseMessage('Get all user')
+  @ResponseMessage('Get all user with pagination')
   @UsePipes(new ValidationPipe({ transform: true }))
   findAll(
     @Query() qs:PagingDto

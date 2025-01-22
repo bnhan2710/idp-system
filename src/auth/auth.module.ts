@@ -5,7 +5,6 @@ import { LocalStategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
-import { PermissionGuard } from './guards/permission.guard';
 @Module({
 
   imports: [
